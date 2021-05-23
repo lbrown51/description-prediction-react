@@ -4,9 +4,9 @@ import { Container, Row, Col, Nav, Navbar, Form, Button, ListGroup } from 'react
 import './App.css';
 
 const genreNames = ['Romance', 'Biography', 'Drama', 'Adventure', 'History', 'Crime',
-        'Western', 'Fantasy', 'Comedy', 'Horror', 'Family', 'Action',
-        'Mystery', 'Sci-Fi', 'Animation', 'Thriller', 'Musical', 'Music',
-        'War', 'Film-Noir', 'Sport']
+  'Western', 'Fantasy', 'Comedy', 'Horror', 'Family', 'Action',
+  'Mystery', 'Sci-Fi', 'Animation', 'Thriller', 'Musical', 'Music',
+  'War', 'Film-Noir', 'Sport']
 class App extends Component {
   constructor(props) {
     super(props)
@@ -34,20 +34,20 @@ class App extends Component {
           query: query
         }
       })
-      .then((res) => {
-        const genreProbData = res.data;
-        const genreProbabilities = []
-        for (let i = 0; i < genreProbData.length; i++) {
-          genreProbabilities[i] = [genreProbData[i][0], Number(genreProbData[i][1])]
-        }
-        this.setState({
-          loading: false,
-          genreProbabilities
+        .then((res) => {
+          const genreProbData = res.data;
+          const genreProbabilities = []
+          for (let i = 0; i < genreProbData.length; i++) {
+            genreProbabilities[i] = [genreProbData[i][0], Math.round(Number(genreProbData[i][1]) * 100)  + '%']
+          }
+          this.setState({
+            loading: false,
+            genreProbabilities
+          })
         })
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+        .catch((err) => {
+          console.log(err);
+        });
     }
   }
   render() {
@@ -63,10 +63,10 @@ class App extends Component {
         <Container className='m-4'>
           <Row>
             <Col>
-              <Form  onSubmit={this.handleSubmitGenreQuery}>
+              <Form onSubmit={this.handleSubmitGenreQuery}>
                 <Form.Group controlId='formGenreQuery'>
                   <Form.Label>Describe your movie!</Form.Label>
-                  <Form.Control as='textarea' rows={6} placeholder='Movie description...'/>
+                  <Form.Control className='mt-2' as='textarea' rows={6} placeholder='Movie description...' />
                   <Form.Text className='text-muted'>
                     Don't worry, we won't tell anyone about your cool idea!
                   </Form.Text>
@@ -77,7 +77,8 @@ class App extends Component {
                 </Button>
               </Form>
             </Col>
-            <Col className='mt-4'>
+            <Col>
+              <p>Genre Confidence</p>
               <ListGroup>
                 {this.state.genreProbabilities.slice(0, 10).map((genreProb, index) => {
                   return <ListGroup.Item key={genreProb[0]}>{genreProb[0]}: {genreProb[1]}</ListGroup.Item>
