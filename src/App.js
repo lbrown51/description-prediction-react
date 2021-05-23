@@ -3,24 +3,54 @@ import axios from 'axios';
 import { Container, Row, Col, Nav, Navbar, Form, Button, ListGroup } from 'react-bootstrap';
 import './App.css';
 
-class App extends Component {
-  handleClick = async (e) => {
-    const genrePredictionURL = 'https://fy8onqbppj.execute-api.us-west-2.amazonaws.com/genrepredict';
-    const query = 'An evil sorceress transports the gang back to the age chivalrous knights, spell-casting wizards, and fire-breathing dragons.';
-    await axios.get(genrePredictionURL, {
-      params: {
-        query: query
-      }
-    })
-      .then((res) => {
-        console.log(res);
-      });
-  }
-  render() {
-    const genreNames = ['Romance', 'Biography', 'Drama', 'Adventure', 'History', 'Crime',
+const genreNames = ['Romance', 'Biography', 'Drama', 'Adventure', 'History', 'Crime',
         'Western', 'Fantasy', 'Comedy', 'Horror', 'Family', 'Action',
         'Mystery', 'Sci-Fi', 'Animation', 'Thriller', 'Musical', 'Music',
         'War', 'Film-Noir', 'Sport']
+class App extends Component {
+  constructor(props) {
+    super(props)
+
+    const genreProbabilities = []
+    for (let i = 0; i < genreNames.length; i++) {
+      genreProbabilities[i] = [genreNames[i], 0.0]
+    }
+
+    this.state = {
+      loading: false,
+      genreProbabilities
+    }
+  }
+
+  handleSubmitGenreQuery = async (e) => {
+    e.preventDefault();
+
+    if (!this.state.loading) {
+      this.setState({ loading: true })
+      const genrePredictionURL = 'https://fy8onqbppj.execute-api.us-west-2.amazonaws.com/genrepredict';
+      const query = e.target[0].value;
+      await axios.get(genrePredictionURL, {
+        params: {
+          query: query
+        }
+      })
+      .then((res) => {
+        const genreProbData = res.data;
+        const genreProbabilities = []
+        for (let i = 0; i < genreProbData.length; i++) {
+          genreProbabilities[i] = [genreProbData[i][0], Number(genreProbData[i][1])]
+        }
+        this.setState({
+          loading: false,
+          genreProbabilities
+        })
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+    }
+  }
+  render() {
     return (
       <div className='App'>
         <Navbar bg='primary' variant='dark'>
@@ -33,7 +63,7 @@ class App extends Component {
         <Container className='m-4'>
           <Row>
             <Col>
-              <Form>
+              <Form  onSubmit={this.handleSubmitGenreQuery}>
                 <Form.Group controlId='formGenreQuery'>
                   <Form.Label>Describe your movie!</Form.Label>
                   <Form.Control as='textarea' rows={6} placeholder='Movie description...'/>
@@ -41,15 +71,16 @@ class App extends Component {
                     Don't worry, we won't tell anyone about your cool idea!
                   </Form.Text>
                 </Form.Group>
-                <Button variant='primary' type='submit' onClick={this.handleClick}>
-                  Submit
+                <Button variant='primary' type='submit'>
+                  {!this.state.loading && 'Submit Description'}
+                  {this.state.loading && 'Loading...'}
                 </Button>
               </Form>
             </Col>
             <Col className='mt-4'>
               <ListGroup>
-                {genreNames.map((genre, index) => {
-                  return <ListGroup.Item>{genre}: 0</ListGroup.Item>
+                {this.state.genreProbabilities.slice(0, 10).map((genreProb, index) => {
+                  return <ListGroup.Item key={genreProb[0]}>{genreProb[0]}: {genreProb[1]}</ListGroup.Item>
                 })}
               </ListGroup>
             </Col>
