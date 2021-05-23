@@ -13,7 +13,7 @@ class App extends Component {
 
     const genreProbabilities = []
     for (let i = 0; i < genreNames.length; i++) {
-      genreProbabilities[i] = [genreNames[i], 0.0]
+      genreProbabilities[i] = [genreNames[i], 'N/A']
     }
 
     this.state = {
