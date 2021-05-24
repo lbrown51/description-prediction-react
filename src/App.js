@@ -65,7 +65,7 @@ class App extends Component {
   render() {
     return (
       <div className='App'>
-        <Container className='d-block border h-100'>
+        <Container className='d-block border'>
           <Row className='d-block'>
             <Navbar bg='primary' variant='dark'>
               <Navbar.Brand>Description Prediction</Navbar.Brand>
