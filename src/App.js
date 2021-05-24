@@ -106,6 +106,11 @@ class App extends Component {
               </ListGroup>
             </Col>
           </Row>
+          <Row className='d-block mt-4'>
+            <Navbar bg='secondary' variant='dark'>
+              <span className='text-white mx-auto'>DP 2020 - Lenny Brown</span>
+            </Navbar>
+          </Row>
         </Container>
       </div>
     );
