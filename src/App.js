@@ -1,12 +1,19 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-import { Container, Row, Col, Nav, Navbar, Form, Button, ListGroup } from 'react-bootstrap';
+import { Container, Row, Col, Navbar, Form, Button, ListGroup } from 'react-bootstrap';
 import './App.css';
 
 const genreNames = ['Romance', 'Biography', 'Drama', 'Adventure', 'History', 'Crime',
   'Western', 'Fantasy', 'Comedy', 'Horror', 'Family', 'Action',
   'Mystery', 'Sci-Fi', 'Animation', 'Thriller', 'Musical', 'Music',
   'War', 'Film-Noir', 'Sport']
+
+const exampleDescriptions = [
+  'An evil sorceress transports the gang back to the age chivalrous knights, spell-casting wizards, and fire-breathing dragons.',
+  'Two imprisoned men bond over a number of years, finding solace and eventual redemption through acts of common decency.',
+  'Danny Ocean and his ten accomplices plan to rob three Las Vegas casinos simultaneously.',
+  'In turn of the century London, a magical nanny employs music and adventure to help two neglected children become closer to their father.'
+]
 class App extends Component {
   constructor(props) {
     super(props)
@@ -50,18 +57,21 @@ class App extends Component {
         });
     }
   }
+
+  handleExampleClick = (e) => {
+    document.getElementById('formGenreQuery').value = e.target.textContent;
+  }
+
   render() {
     return (
       <div className='App'>
-        <Navbar bg='primary' variant='dark'>
-          <Navbar.Brand href='#home'>Description Prediction</Navbar.Brand>
-          <Nav className='mr-auto'>
-            <Nav.Link href='#home'>Genre</Nav.Link>
-            <Nav.Link href='#features'>Actors</Nav.Link>
-          </Nav>
-        </Navbar>
-        <Container className='m-4'>
-          <Row>
+        <Container className='d-block border h-100'>
+          <Row className='d-block'>
+            <Navbar bg='primary' variant='dark'>
+              <Navbar.Brand>Description Prediction</Navbar.Brand>
+            </Navbar>
+          </Row>
+          <Row className='m-4'>
             <Col>
               <Form onSubmit={this.handleSubmitGenreQuery}>
                 <Form.Group controlId='formGenreQuery'>
@@ -77,6 +87,16 @@ class App extends Component {
                 </Button>
               </Form>
             </Col>
+            <Col>
+              <p>Example Descriptions (click one!)</p>
+              <ListGroup>
+                {exampleDescriptions.map((example, index) => {
+                  return <ListGroup.Item key={index} action onClick={this.handleExampleClick}>{example}</ListGroup.Item>
+                })}
+              </ListGroup>
+            </Col>
+          </Row>
+          <Row className='mt-4'>
             <Col>
               <p>Genre Confidence</p>
               <ListGroup>
