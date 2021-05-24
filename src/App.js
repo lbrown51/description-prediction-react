@@ -54,6 +54,10 @@ class App extends Component {
         })
         .catch((err) => {
           console.log(err);
+          alert(err);
+          this.setState({
+            loading: false
+          })
         });
     }
   }
