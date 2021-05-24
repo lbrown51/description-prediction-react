@@ -51,6 +51,12 @@ class App extends Component {
             loading: false,
             genreProbabilities
           })
+
+          let posX, posY = (0, 0);
+
+          const confidenceList = document.getElementById('genreConfidenceList');
+          posY += confidenceList.offsetTop;
+          window.scrollTo(posX, posY);
         })
         .catch((err) => {
           console.log(err);
@@ -100,7 +106,7 @@ class App extends Component {
               </ListGroup>
             </Col>
           </Row>
-          <Row className='mt-4'>
+          <Row className='mt-4' id='genreConfidenceList'>
             <Col>
               <p>Genre Confidence</p>
               <ListGroup>
