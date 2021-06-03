@@ -34,12 +34,10 @@ class App extends Component {
 
     if (!this.state.loading) {
       this.setState({ loading: true })
-      const genrePredictionURL = 'https://fy8onqbppj.execute-api.us-west-2.amazonaws.com/genrepredict';
+      const genrePredictionURL = 'https://fy8onqbppj.execute-api.us-west-2.amazonaws.com/classify-genre';
       const query = e.target[0].value;
-      await axios.get(genrePredictionURL, {
-        params: {
-          query: query
-        }
+      await axios.post(genrePredictionURL, {
+        query: query
       })
         .then((res) => {
           const genreProbData = res.data;
