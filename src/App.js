@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-import { Container, Row, Col, Navbar, Form, Button, ListGroup } from 'react-bootstrap';
+import { Container, Row, Col, Navbar, Form, Button, ListGroup, Spinner } from 'react-bootstrap';
 import './App.css';
 
 const genreNames = ['Romance', 'Biography', 'Drama', 'Adventure', 'History', 'Crime',
@@ -24,7 +24,9 @@ class App extends Component {
     }
 
     this.state = {
+      lambdaStarting: true,
       loading: false,
+      genrePredictionURL: 'https://fy8onqbppj.execute-api.us-west-2.amazonaws.com/classify-genre',
       genreProbabilities
     }
   }
@@ -32,18 +34,17 @@ class App extends Component {
   handleSubmitGenreQuery = async (e) => {
     e.preventDefault();
 
-    if (!this.state.loading) {
+    if (!this.state.loading && !this.state.lambdaStarting) {
       this.setState({ loading: true })
-      const genrePredictionURL = 'https://fy8onqbppj.execute-api.us-west-2.amazonaws.com/classify-genre';
       const query = e.target[0].value;
-      await axios.post(genrePredictionURL, {
+      await axios.post(this.state.genrePredictionURL, {
         query: query
       })
         .then((res) => {
           const genreProbData = res.data;
           const genreProbabilities = []
           for (let i = 0; i < genreProbData.length; i++) {
-            genreProbabilities[i] = [genreProbData[i][0], Math.round(Number(genreProbData[i][1]) * 100)  + '%']
+            genreProbabilities[i] = [genreProbData[i][0], Math.round(Number(genreProbData[i][1]) * 100) + '%']
           }
           this.setState({
             loading: false,
@@ -70,6 +71,24 @@ class App extends Component {
     document.getElementById('formGenreQuery').value = e.target.textContent;
   }
 
+  componentDidMount() {
+    axios.post(this.state.genrePredictionURL, {
+      query: 'test query'
+    })
+      .then((res) => {
+        this.setState({
+          lambdaStarting: false,
+        })
+      })
+      .catch((err) => {
+        console.log(err);
+        alert(err);
+        this.setState({
+          lambdaStarting: false,
+        })
+      });
+  }
+
   render() {
     return (
       <div className='App'>
@@ -90,8 +109,9 @@ class App extends Component {
                   </Form.Text>
                 </Form.Group>
                 <Button variant='primary' type='submit'>
-                  {!this.state.loading && 'Submit Description'}
-                  {this.state.loading && 'Loading...'}
+                  {this.state.lambdaStarting && <p>Warming Up <br /><Spinner animation="border" variant="light" size='sm' /></p> }
+                  {!this.state.lambdaStarting && !this.state.loading && 'Submit Description'}
+                  {this.state.loading && <p>Loading<br /><Spinner animation="border" variant="light" size='sm' /></p> }
                 </Button>
               </Form>
             </Col>
